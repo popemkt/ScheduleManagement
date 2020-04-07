@@ -16,9 +16,8 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default function EnterTimesheet({ navigation }) {
   const employee = useContext(EmployeeContext);
-  const [listTasks, setListTasks] = useState([]);
+  const [schedule, setSchedule] = useState([]);
   const [searchAgain, setSearchAgain] = useState(true);
-  const [userSearch, setUserSearch] = useState('');
   const [options, setOptions] = useState({
     filter: false,
     fromDate: null,
@@ -28,38 +27,38 @@ export default function EnterTimesheet({ navigation }) {
   const [optionModalVisibility, setOptionModalVisibility] = useState(false);
   const focused = useIsFocused();
 
-  console.log(JSON.stringify(employee));
+  // console.log(JSON.stringify(employee));
 
-  const filter = l => {
-    return Boolean(
-      (!userSearch ||
-        (userSearch &&
-          l.ProcesssorName.toLowerCase().includes(userSearch.toLowerCase()))) &&
-        optionFilter(l),
-    );
-  };
+  // const filter = (l) => {
+  //   return Boolean(
+  //     (!userSearch ||
+  //       (userSearch &&
+  //         l.ProcesssorName.toLowerCase().includes(userSearch.toLowerCase()))) &&
+  //       optionFilter(l),
+  //   );
+  // };
 
-  const optionFilter = l => {
-    if (options.filter) {
-      let date = new Date(l.DueDate);
-      return (
-        Boolean(options.fromDate ? date >= options.fromDate : true) &&
-        (options.toDate ? date <= options.toDate : true) &&
-        (options.status ? options.status == l.Status : true)
-      );
-    } else return true;
-  };
+  // const optionFilter = (l) => {
+  //   if (options.filter) {
+  //     let date = new Date(l.DueDate);
+  //     return (
+  //       Boolean(options.fromDate ? date >= options.fromDate : true) &&
+  //       (options.toDate ? date <= options.toDate : true) &&
+  //       (options.status ? options.status == l.Status : true)
+  //     );
+  //   } else return true;
+  // };
 
   useEffect(() => {
-    if (focused)
-      getAllTasks(employee.Id)
-        .then(res => {
-          setListTasks(res.data.Data);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-  }, [focused, searchAgain]);
+    // if (focused)
+    //   getAllTasks(employee.Id)
+    //     .then((res) => {
+    //       setSchedule(res.data.Data);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+  }, [focused]);
 
   return (
     <View style={styles.container}>
@@ -76,14 +75,7 @@ export default function EnterTimesheet({ navigation }) {
           icon={{ name: 'recycle', size: 10 }}
           buttonStyle={{ marginLeft: 10, marginBottom: 10 }}
           onPress={() => {
-            setUserSearch('');
-            setSearchAgain(!searchAgain);
-            setOptions({
-              filter: false,
-              fromDate: null,
-              toDate: null,
-              status: null,
-            });
+            setSchedule([])
           }}
         />
       </View>
@@ -117,13 +109,13 @@ export default function EnterTimesheet({ navigation }) {
           loop={false}
           containerStyle={{ borderRadius: 10 }}
         >
-          <ScheduleInput/>
-          <View style={styles.slide2}>
-            <Text style={styles.text}>Beautiful</Text>
-          </View>
-          <View style={styles.slide3}>
-            <Text style={styles.text}>And simple</Text>
-          </View>
+          <ScheduleInput date='2020-04-06' />
+          <ScheduleInput date='2020-04-07' />
+          <ScheduleInput date='2020-04-08' />
+          <ScheduleInput date='2020-04-09' />
+          <ScheduleInput date='2020-04-10' />
+          <ScheduleInput date='2020-04-11' />
+          <ScheduleInput date='2020-04-12' />
         </Swiper>
       </View>
     </View>

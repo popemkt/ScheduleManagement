@@ -12,7 +12,7 @@ export function hourSlotToString(hourSlot) {
   return `${hourSlot}h - ${hourSlot+1}h`;
 }
 
-export function getNextWeekDates()
+export function getNextWeekDates() {};
 
 export function dateToWeekday(date) {
   let dayNum = new Date(date).getDay();

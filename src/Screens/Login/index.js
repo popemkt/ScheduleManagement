@@ -47,24 +47,21 @@ export default function Login({ navigation }) {
     } else {
       login(username, password)
         .then(response => {
-          let data = response[0];
-          console.log(JSON.stringify(data));
-
+          let data = response.data.Data;
           setIsLoading(false);
           switch (data.RoleId) {
             case 1:
-              navigation.navigate('Admin', { data });
+              navigation.navigate('Employee', { data });
               break;
             case 2:
               navigation.navigate('Employee', { data });
               console.log('emp');
               break;
             case 3:
-              navigation.navigate('User', { data });
+              navigation.navigate('Employee', { data });
               break;
             default:
               Alert.alert('Error with server response');
-              console.log(JSON.stringify(response));
               break;
           }
         })

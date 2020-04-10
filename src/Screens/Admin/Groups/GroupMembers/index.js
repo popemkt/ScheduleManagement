@@ -9,7 +9,7 @@ import Button from '../../../../Components/Button';
 import { ListItem } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import UserChooser from '../../../../Components/UserChooser';
-import { theme } from '../../../../Constants/configs';
+import { theme } from '../../../../Constants/appConfigs';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function GroupMembers({ navigation, route }) {

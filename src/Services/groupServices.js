@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import { BASE_URL } from '../Constants/configs';
+import { BASE_URL } from '../Constants/appConfigs';
 import axios from 'axios';
 
 export async function getAllGroups() {

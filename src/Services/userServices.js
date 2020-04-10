@@ -1,4 +1,4 @@
-import { BASE_URL } from '../Constants/configs';
+import { BASE_URL } from '../Constants/appConfigs';
 import axios from 'axios';
 
 export async function createUser(username, password, fullname, roleId) {

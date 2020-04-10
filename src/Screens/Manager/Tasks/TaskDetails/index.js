@@ -14,7 +14,7 @@ import {
   updateTaskDetails,
 } from '../../../../Services/taskServices';
 
-import { BASE_URL } from '../../../../Constants/configs';
+import { BASE_URL } from '../../../../Constants/appConfigs';
 import Button from '../../../../Components/Button';
 import ImagePicker from '../../../../Components/ImagePicker';
 import { ManagerContext } from '../../../../Contexts';

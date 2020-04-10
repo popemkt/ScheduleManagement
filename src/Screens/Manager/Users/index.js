@@ -8,7 +8,7 @@ import { ManagerContext } from '../../../Contexts';
 import QrScanner from '../../../Components/QrScanner';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { loadAllUsers } from '../../../Services/userServices';
-import { theme } from '../../../Constants/configs';
+import { theme } from '../../../Constants/appConfigs';
 import { useIsFocused } from '@react-navigation/native';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;

@@ -1,23 +1,18 @@
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
-import { Input, ListItem } from 'react-native-elements';
 import React, { useContext, useEffect, useState } from 'react';
-import { getDatetime, truncate } from '../../../Common/utils';
+import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../../Components/Button';
 import { EmployeeContext } from '../../../Contexts';
 import OptionModal from './Modals/OptionModal/OptionModal';
 import ScheduleInput from './ScheduleInput';
 import Swiper from 'react-native-swiper';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { getAllTasks } from '../../../Services/taskServices';
+import { getCurrentWeekDates } from '../../../Common/utils';
 import { useIsFocused } from '@react-navigation/native';
-
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default function EnterTimesheet({ navigation }) {
   const employee = useContext(EmployeeContext);
+  const currentWeekDates = getCurrentWeekDates();
   const [schedule, setSchedule] = useState([]);
-  const [searchAgain, setSearchAgain] = useState(true);
   const [options, setOptions] = useState({
     filter: false,
     fromDate: null,
@@ -26,28 +21,6 @@ export default function EnterTimesheet({ navigation }) {
   });
   const [optionModalVisibility, setOptionModalVisibility] = useState(false);
   const focused = useIsFocused();
-
-  // console.log(JSON.stringify(employee));
-
-  // const filter = (l) => {
-  //   return Boolean(
-  //     (!userSearch ||
-  //       (userSearch &&
-  //         l.ProcesssorName.toLowerCase().includes(userSearch.toLowerCase()))) &&
-  //       optionFilter(l),
-  //   );
-  // };
-
-  // const optionFilter = (l) => {
-  //   if (options.filter) {
-  //     let date = new Date(l.DueDate);
-  //     return (
-  //       Boolean(options.fromDate ? date >= options.fromDate : true) &&
-  //       (options.toDate ? date <= options.toDate : true) &&
-  //       (options.status ? options.status == l.Status : true)
-  //     );
-  //   } else return true;
-  // };
 
   useEffect(() => {
     // if (focused)
@@ -58,28 +31,28 @@ export default function EnterTimesheet({ navigation }) {
     //     .catch((err) => {
     //       console.log(err);
     //     });
-  }, [focused]);
+    console.log(schedule);
+  }, [focused, schedule]);
 
   return (
-    <View style={styles.container}>
+    <View style={s.container}>
       <OptionModal
         isVisible={optionModalVisibility}
         setIsVisile={setOptionModalVisibility}
         options={options}
         setOptions={setOptions}
       />
-      {/* <Text style={styles.header}>{employee.Username || 'Admin Board'}</Text> */}
-      <View style={styles.row}>
-        <Text style={styles.minorHeader}>{'Tasks'}</Text>
+      <View style={s.row}>
+        <Text style={s.minorHeader}>{'Tasks'}</Text>
         <Button
           icon={{ name: 'recycle', size: 10 }}
           buttonStyle={{ marginLeft: 10, marginBottom: 10 }}
           onPress={() => {
-            setSchedule([])
+            setSchedule([]);
           }}
         />
       </View>
-      <View style={styles.row}>
+      <View style={s.row}>
         <Button
           title='Options '
           icon={{ name: 'cog', size: 10 }}
@@ -87,47 +60,41 @@ export default function EnterTimesheet({ navigation }) {
           onPress={() => setOptionModalVisibility(true)}
           style={{ color: 'red' }}
         />
+        <Text>{currentWeekDates[0] + ' to ' + currentWeekDates[6]}</Text>
         <Button
           title='Create '
           icon={{ name: 'plus', size: 10 }}
           onPress={() => navigation.navigate('CreateTask')}
         />
       </View>
-      <View
-        style={{
-          flex: 1,
-          marginHorizontal: 5,
-          marginVertical: 5,
-          borderRadius: 10,
-          backgroundColor: 'white',
-          overflow: 'hidden',
-        }}
-      >
+      <View style={s.wrapper}>
         <Swiper
           showsButtons={true}
           showsPagination={false}
           loop={false}
           containerStyle={{ borderRadius: 10 }}
         >
-          <ScheduleInput date='2020-04-06' />
-          <ScheduleInput date='2020-04-07' />
-          <ScheduleInput date='2020-04-08' />
-          <ScheduleInput date='2020-04-09' />
-          <ScheduleInput date='2020-04-10' />
-          <ScheduleInput date='2020-04-11' />
-          <ScheduleInput date='2020-04-12' />
+          {currentWeekDates.map((date, index) => (
+            <ScheduleInput
+              schedule={schedule}
+              setSchedule={setSchedule}
+              key={index}
+              date={date}
+            />
+          ))}
         </Swiper>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const s = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     backgroundColor: '#F5FCFF',
+    paddingTop: 10,
   },
   header: {
     textAlign: 'center',
@@ -152,25 +119,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   wrapper: {
+    flex: 1,
+    marginHorizontal: 5,
+    marginVertical: 5,
     borderRadius: 10,
-  },
-  slide1: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#9DD6EB',
-  },
-  slide2: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#97CAE5',
-  },
-  slide3: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#92BBD9',
+    backgroundColor: 'white',
+    overflow: 'hidden',
   },
   text: {
     color: '#fff',

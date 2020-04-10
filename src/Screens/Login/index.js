@@ -2,12 +2,13 @@ import {
   Alert,
   Dimensions,
   ImageBackground,
-  Keyboard,
+  KeyboardAvoidingView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { getAuthHeadersConfig, setAuthToken } from '../../Common/config';
 
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -22,16 +23,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 export default function Login({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassord] = useState('');
-  const [marginTop, setMarginTop] = useState();
   const [isLoading, setIsLoading] = useState(false);
-
-  const onKeyboardShow = () => {
-    setMarginTop(-100);
-  };
-
-  const onKeyboardHide = () => {
-    setMarginTop(0);
-  };
 
   const onSubmit = () => {
     setIsLoading(true);
@@ -46,26 +38,28 @@ export default function Login({ navigation }) {
       setIsLoading(false);
     } else {
       login(username, password)
-        .then(response => {
+        .then((response) => {
           let data = response.data.Data;
+          setAuthToken(data.Token);
+          console.log('Headers: ' + JSON.stringify(getAuthHeadersConfig()));
           setIsLoading(false);
           switch (data.RoleId) {
             case 1:
-              navigation.navigate('Employee', { data });
+              navigation.navigate('Employee', data);
               break;
             case 2:
-              navigation.navigate('Employee', { data });
+              navigation.navigate('Employee', data);
               console.log('emp');
               break;
             case 3:
-              navigation.navigate('Employee', { data });
+              navigation.navigate('Employee', data);
               break;
             default:
               Alert.alert('Error with server response');
               break;
           }
         })
-        .catch(err => {
+        .catch((err) => {
           Alert.alert('Login failed', err.Message);
           console.log(err);
           setIsLoading(false);
@@ -73,27 +67,10 @@ export default function Login({ navigation }) {
     }
   };
 
-  useEffect(() => {
-    const keyboardShow = Keyboard.addListener(
-      'keyboardDidShow',
-      onKeyboardShow,
-    );
-    const keyboardHide = Keyboard.addListener(
-      'keyboardDidHide',
-      onKeyboardHide,
-    );
-
-    return () => {
-      keyboardShow.remove();
-      keyboardHide.remove();
-    };
-  }, []);
-
   return (
-    <View
+    <KeyboardAvoidingView
       style={{
         ...s.container,
-        marginTop: marginTop,
         backgroundColor: 'pink',
       }}
     >
@@ -121,7 +98,7 @@ export default function Login({ navigation }) {
             autoCapitalize='none'
             value={username}
             icon={{ name: 'user', size: 30 }}
-            onChangeText={text => setUsername(text)}
+            onChangeText={(text) => setUsername(text)}
             inputStyle={{ fontSize: 22, paddingLeft: 10 }}
             labelStyle={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}
             color='white'
@@ -134,7 +111,7 @@ export default function Login({ navigation }) {
             textContentType='password'
             value={password}
             inputStyle={{ fontSize: 22, paddingLeft: 10 }}
-            onChangeText={text => setPassord(text)}
+            onChangeText={(text) => setPassord(text)}
             labelStyle={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}
           />
           <Button
@@ -160,7 +137,7 @@ export default function Login({ navigation }) {
           />
         </View>
       </ImageBackground>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

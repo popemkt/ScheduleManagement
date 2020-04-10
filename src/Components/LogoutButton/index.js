@@ -5,8 +5,7 @@ function LogoutButton({ navigation }) {
   return (
     <Button
       onPress={() => navigation.popToTop()}
-      title='Logout '
-      icon={{ name: 'arrow-right', size: 10 }}
+      icon={{ name: 'share-square', size: 18 }}
       buttonStyle={{ marginRight: 10, height: 30 }}
     />
   );

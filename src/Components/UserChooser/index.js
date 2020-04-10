@@ -11,7 +11,7 @@ import React, { useEffect, useState } from 'react';
 
 import Button from '../Button';
 import { loadAllUsers } from '../../Services/userServices';
-import { theme } from '../../Constants/configs';
+import { theme } from '../../Constants/appConfigs';
 
 function UserChooser({
   title = 'Choose a user',

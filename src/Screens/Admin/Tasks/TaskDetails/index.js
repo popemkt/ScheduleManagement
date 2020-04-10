@@ -15,7 +15,7 @@ import {
 } from '../../../../Services/taskServices';
 
 import { AdminContext } from '../../../../Contexts';
-import { BASE_URL } from '../../../../Constants/configs';
+import { BASE_URL } from '../../../../Constants/appConfigs';
 import Button from '../../../../Components/Button';
 import ImagePicker from '../../../../Components/ImagePicker';
 import { getDatetime } from '../../../../Common/utils';

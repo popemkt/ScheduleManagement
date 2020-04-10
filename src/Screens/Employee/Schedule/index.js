@@ -1,4 +1,11 @@
-import { Alert, Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Input, ListItem } from 'react-native-elements';
 import React, { useContext, useEffect, useState } from 'react';
 import { getDatetime, truncate } from '../../../Common/utils';
@@ -8,12 +15,14 @@ import { EmployeeContext } from '../../../Contexts';
 import OptionModal from './Modals/OptionModal/OptionModal';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { getAllTasks } from '../../../Services/taskServices';
+import { getAuthHeadersConfig } from '../../../Common/config';
 import { useIsFocused } from '@react-navigation/native';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default function Tasks({ navigation }) {
   const employee = useContext(EmployeeContext);
+  console.log(JSON.stringify(getAuthHeadersConfig()));
   const [listTasks, setListTasks] = useState([]);
   const [searchAgain, setSearchAgain] = useState(true);
   const [userSearch, setUserSearch] = useState('');
@@ -31,7 +40,7 @@ export default function Tasks({ navigation }) {
     color: '#2089dc',
   };
 
-  const filter = l => {
+  const filter = (l) => {
     return Boolean(
       (!userSearch ||
         (userSearch &&
@@ -40,7 +49,7 @@ export default function Tasks({ navigation }) {
     );
   };
 
-  const optionFilter = l => {
+  const optionFilter = (l) => {
     if (options.filter) {
       let date = new Date(l.DueDate);
       return (
@@ -54,10 +63,10 @@ export default function Tasks({ navigation }) {
   useEffect(() => {
     if (focused)
       getAllTasks(employee.Id)
-        .then(res => {
+        .then((res) => {
           setListTasks(res.data.Data);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
   }, [focused, searchAgain]);

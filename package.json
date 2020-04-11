@@ -8,11 +8,14 @@
     "start:reset": "react-native start --reset-cache",
     "test": "jest",
     "link": "react-native link",
-    "amenu": "adb shell input keyevent 82"
+    "amenu": "adb shell input keyevent 82",
+    "uninstall": "adb uninstall com.cs"
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "^2.2.3",
     "@react-native-community/masked-view": "^0.1.7",
+    "@react-native-firebase/app": "^6.4.0",
+    "@react-native-firebase/auth": "^6.4.0",
     "@react-navigation/drawer": "^5.1.1",
     "@react-navigation/native": "^5.0.9",
     "@react-navigation/stack": "^5.1.1",
@@ -25,6 +28,7 @@
     "react-native": "~0.61.4",
     "react-native-elements": "^1.2.7",
     "react-native-gesture-handler": "^1.6.0",
+    "react-native-google-signin": "^2.1.1",
     "react-native-modal": "^11.5.4",
     "react-native-reanimated": "^1.7.0",
     "react-native-safe-area-context": "^0.7.3",

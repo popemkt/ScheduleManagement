@@ -75,18 +75,41 @@ export function toISODateString(date) {
 }
 
 export class ScheduleHelper {
-  constructor(datesOfWeek) {
+  constructor(datesOfWeek, schedule) {
     this.datesOfWeek = datesOfWeek;
+    this.schedule = schedule;
   }
 
   initEmpScheduleRegistration = () => {
     return this.datesOfWeek.flatMap((dateOfWeek) => {
       let result = [];
       for (let i = 0; i < 8; i++) {
-        if (i <= 3) {
-          result.push({});
-        }
+        result.push({
+          HourSlot: i + (i <= 3 ? 8 : 9),
+          Date: dateOfWeek,
+          Active: true,
+          IsSubmitted: false,
+        });
       }
+      return result;
     });
+  };
+
+  preprocessFetchResult = (result) =>
+    result.forEach((entry) => {
+      let location = this.getArrayLocationFromDateAndHourSlot(entry);
+      let selectedEntry = this.schedule.entry[location];
+      selectedEntry.Id = entry.Id;
+      selectedEntry.IsSubmitted = true;
+      selectedEntry.Active = entry.Active;
+    });
+
+  getArrayLocationFromDateAndHourSlot = (entry) => {
+    let date = new Date(entry.Date);
+    let weekDay = date.getDay();
+    return (
+      (weekDay - (weekDay ? 1 : -6)) * 8 +
+      (entry.HourSlot - (entry.HourSlot <= 11 ? 8 : 9))
+    );
   };
 }

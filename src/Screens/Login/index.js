@@ -7,12 +7,14 @@ import {
   Text,
   View,
 } from 'react-native';
+import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
 import React, { useState } from 'react';
 import { getAuthHeadersConfig, setAuthToken } from '../../Common/config';
 
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import TextInput from '../../Components/TextInput';
+import auth from '@react-native-firebase/auth';
 import { login } from '../../Services/commonServices';
 
 const BG_IMAGE = require('../../Assets/background.jpg');

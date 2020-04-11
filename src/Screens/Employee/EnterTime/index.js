@@ -3,33 +3,50 @@ import {
   EmployeeContext,
 } from '../../../Contexts';
 import React, { useContext, useEffect, useState } from 'react';
+import { ScheduleHelper, getCurrentWeekDates } from '../../../Common/utils';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../../Components/Button';
+import DailySchedule from './DailySchedule';
 import OptionModal from './Modals/OptionModal/OptionModal';
-import ScheduleInput from './ScheduleInput';
 import Swiper from 'react-native-swiper';
-import { getCurrentWeekDates } from '../../../Common/utils';
+import { getEmpScheduleRegistration } from '../../../Services/empScheduleRegistrationService';
 import { useIsFocused } from '@react-navigation/native';
 
-export default function EnterTimesheet({ navigation }) {
+export default function EnterTimesheet() {
+  const [currentWeekDates, setCurrentWeekDates] = useState(
+    getCurrentWeekDates(),
+  );
+  const [scheduleHelper, setScheduleHelper] = useState(
+    new ScheduleHelper(currentWeekDates),
+  );
   const employee = useContext(EmployeeContext);
-  const currentWeekDates = getCurrentWeekDates();
   const [schedule, setSchedule] = useState([]);
-  const [editedSchedule, setEditedSchedule] = useState([]);
   const [optionModalVisibility, setOptionModalVisibility] = useState(false);
   const focused = useIsFocused();
 
   useEffect(() => {
-    // if (focused)
-    //   getAllTasks(employee.Id)
-    //     .then((res) => {
-    //       setSchedule(res.data.Data);
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //     });
-    console.log(schedule);
+    setSchedule(scheduleHelper.initEmpScheduleRegistration());
+    console.log(
+      'index: ' +
+        scheduleHelper.getArrayLocationFromDateAndHourSlot({
+          HourSlot: 16,
+          Date: '2020-04-12',
+        }),
+    );
+  }, []);
+
+  console.log('rerender');
+
+  useEffect(() => {
+    if (focused)
+      getEmpScheduleRegistration(employee.Id)
+        .then((res) => {
+          scheduleHelper.preprocessFetchResult(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
   }, [focused, schedule]);
 
   return (
@@ -39,7 +56,7 @@ export default function EnterTimesheet({ navigation }) {
         setIsVisile={setOptionModalVisibility}
       />
       <View style={s.row}>
-        <Text style={s.minorHeader}>{'Tasks'}</Text>
+        <Text style={s.minorHeader}>{'TimeSheet'}</Text>
         <Button
           icon={{ name: 'recycle', size: 10 }}
           buttonStyle={{ marginLeft: 10, marginBottom: 10 }}
@@ -60,7 +77,7 @@ export default function EnterTimesheet({ navigation }) {
         <Button
           title='Create '
           icon={{ name: 'plus', size: 10 }}
-          onPress={() => navigation.navigate('CreateTask')}
+          // onPress={() => navigation.navigate('CreateTask')}
         />
       </View>
       <View style={s.wrapper}>
@@ -78,7 +95,11 @@ export default function EnterTimesheet({ navigation }) {
             containerStyle={{ borderRadius: 10 }}
           >
             {currentWeekDates.map((date, index) => (
-              <ScheduleInput key={index} date={date} />
+              <DailySchedule
+                key={index}
+                date={date}
+                entries={schedule.slice(index * 8, (index + 1) * 8)}
+              />
             ))}
           </Swiper>
         </EmpScheduleRegistrationContext.Provider>

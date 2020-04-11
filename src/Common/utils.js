@@ -41,7 +41,7 @@ export function dateToWeekday(date) {
       day = 'Sunday';
       break;
     default:
-      console.log("date: " + JSON.stringify(date) + dayNum);
+      console.log('date: ' + JSON.stringify(date) + dayNum);
       day = 'Date incorrect';
       break;
   }
@@ -72,4 +72,21 @@ export function toISODateString(date) {
   return `${date.getFullYear()}-${
     (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1)
   }-${(date.getDate() < 10 ? '0' : '') + date.getDate()}`;
+}
+
+export class ScheduleHelper {
+  constructor(datesOfWeek) {
+    this.datesOfWeek = datesOfWeek;
+  }
+
+  initEmpScheduleRegistration = () => {
+    return this.datesOfWeek.flatMap((dateOfWeek) => {
+      let result = [];
+      for (let i = 0; i < 8; i++) {
+        if (i <= 3) {
+          result.push({});
+        }
+      }
+    });
+  };
 }

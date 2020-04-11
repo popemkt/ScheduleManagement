@@ -1,8 +1,11 @@
+import {
+  EmpScheduleRegistrationContext,
+  EmployeeContext,
+} from '../../../Contexts';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../../Components/Button';
-import { EmployeeContext } from '../../../Contexts';
 import OptionModal from './Modals/OptionModal/OptionModal';
 import ScheduleInput from './ScheduleInput';
 import Swiper from 'react-native-swiper';
@@ -13,12 +16,7 @@ export default function EnterTimesheet({ navigation }) {
   const employee = useContext(EmployeeContext);
   const currentWeekDates = getCurrentWeekDates();
   const [schedule, setSchedule] = useState([]);
-  const [options, setOptions] = useState({
-    filter: false,
-    fromDate: null,
-    toDate: null,
-    status: null,
-  });
+  const [editedSchedule, setEditedSchedule] = useState([]);
   const [optionModalVisibility, setOptionModalVisibility] = useState(false);
   const focused = useIsFocused();
 
@@ -39,8 +37,6 @@ export default function EnterTimesheet({ navigation }) {
       <OptionModal
         isVisible={optionModalVisibility}
         setIsVisile={setOptionModalVisibility}
-        options={options}
-        setOptions={setOptions}
       />
       <View style={s.row}>
         <Text style={s.minorHeader}>{'Tasks'}</Text>
@@ -68,21 +64,24 @@ export default function EnterTimesheet({ navigation }) {
         />
       </View>
       <View style={s.wrapper}>
-        <Swiper
-          showsButtons={true}
-          showsPagination={false}
-          loop={false}
-          containerStyle={{ borderRadius: 10 }}
+        <EmpScheduleRegistrationContext.Provider
+          value={{
+            schedule: schedule,
+            setSchedule: setSchedule,
+            currentWeekDates: currentWeekDates,
+          }}
         >
-          {currentWeekDates.map((date, index) => (
-            <ScheduleInput
-              schedule={schedule}
-              setSchedule={setSchedule}
-              key={index}
-              date={date}
-            />
-          ))}
-        </Swiper>
+          <Swiper
+            showsButtons={true}
+            showsPagination={false}
+            loop={false}
+            containerStyle={{ borderRadius: 10 }}
+          >
+            {currentWeekDates.map((date, index) => (
+              <ScheduleInput key={index} date={date} />
+            ))}
+          </Swiper>
+        </EmpScheduleRegistrationContext.Provider>
       </View>
     </View>
   );

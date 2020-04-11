@@ -2,10 +2,12 @@ import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { dateToWeekday, hourSlotToString } from '../../../../Common/utils';
 
+import { EmpScheduleRegistrationContext } from '../../../../Contexts';
 import EmployeeContext from '../../../../Contexts/EmployeeContext';
 
-const Row = ({ date, setSchedule, schedule, hourSlot }) => {
+const HourSlotPicker = ({ date, hourSlot }) => {
   const [selected, setSelected] = useState(false);
+  const { schedule, setSchedule } = useContext(EmpScheduleRegistrationContext);
   const emp = useContext(EmployeeContext);
   return (
     <View style={s.row}>
@@ -17,13 +19,19 @@ const Row = ({ date, setSchedule, schedule, hourSlot }) => {
           if (!selected) {
             setSchedule([
               ...schedule,
-              { Date: date, HourSlot: hourSlot, EmpId: emp.EmpId, Active: true },
+              {
+                Date: date,
+                HourSlot: hourSlot,
+                EmpId: emp.EmpId,
+                Active: true,
+              },
             ]);
           } else {
             setSchedule(
-              schedule.filter(
-                (item) => item.HourSlot !== hourSlot && item.Date !== date,
-              ),
+              schedule.filter((item) => {
+                console.log(JSON.stringify(item) + hourSlot + date);
+                if (item.HourSlot !== hourSlot || item.Date !== date) return item;
+              }),
             );
           }
         }}
@@ -32,60 +40,20 @@ const Row = ({ date, setSchedule, schedule, hourSlot }) => {
   );
 };
 
-const ScheduleInput = ({ date, schedule, setSchedule }) => {
+const ScheduleInput = ({ date }) => {
   return (
     <View style={s.slide}>
       <Text style={s.dayTitle}>{date && dateToWeekday(date)}</Text>
       <Text>Morning Shift</Text>
-      <Row
-        hourSlot={8}
-        date={date}
-        schedule={schedule}
-        setSchedule={setSchedule}
-      />
-      <Row
-        hourSlot={9}
-        date={date}
-        schedule={schedule}
-        setSchedule={setSchedule}
-      />
-      <Row
-        hourSlot={10}
-        date={date}
-        schedule={schedule}
-        setSchedule={setSchedule}
-      />
-      <Row
-        hourSlot={11}
-        date={date}
-        schedule={schedule}
-        setSchedule={setSchedule}
-      />
+      <HourSlotPicker hourSlot={8} date={date} />
+      <HourSlotPicker hourSlot={9} date={date} />
+      <HourSlotPicker hourSlot={10} date={date} />
+      <HourSlotPicker hourSlot={11} date={date} />
       <Text>Afternoon Shift</Text>
-      <Row
-        hourSlot={13}
-        date={date}
-        schedule={schedule}
-        setSchedule={setSchedule}
-      />
-      <Row
-        hourSlot={14}
-        date={date}
-        schedule={schedule}
-        setSchedule={setSchedule}
-      />
-      <Row
-        hourSlot={15}
-        date={date}
-        schedule={schedule}
-        setSchedule={setSchedule}
-      />
-      <Row
-        hourSlot={16}
-        date={date}
-        schedule={schedule}
-        setSchedule={setSchedule}
-      />
+      <HourSlotPicker hourSlot={13} date={date} />
+      <HourSlotPicker hourSlot={14} date={date} />
+      <HourSlotPicker hourSlot={15} date={date} />
+      <HourSlotPicker hourSlot={16} date={date} />
     </View>
   );
 };

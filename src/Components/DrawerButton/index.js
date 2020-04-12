@@ -1,7 +1,7 @@
-import Button from '../Button';
+ import Button from '../Button';
 import React from 'react';
 
-function LogoutButton({ navigation }) {
+function DrawerButton({ navigation }) {
   return (
     <Button
       onPress={() => navigation.openDrawer()}
@@ -13,4 +13,4 @@ function LogoutButton({ navigation }) {
   );
 }
 
-export default LogoutButton;
+export default DrawerButton;

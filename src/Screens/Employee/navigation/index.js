@@ -3,16 +3,18 @@ import EnterTimeRoutes from './EnterTime';
 import React from 'react';
 import ScheduleRoutes from './Schedule';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import ProfileRoutes from './Profile';
 
-const EmpoloyeeDrawer = createDrawerNavigator();
+const EmployeeDrawer = createDrawerNavigator();
 
 function UserRoutes({ route }) {
   return (
     <EmployeeContext.Provider value={{ ...route.params }}>
-      <EmpoloyeeDrawer.Navigator initialRouteName='My Schedule'>
-        <EmpoloyeeDrawer.Screen name='My Schedule' component={ScheduleRoutes} />
-        <EmpoloyeeDrawer.Screen name='Enter Timesheet' component={EnterTimeRoutes} />
-      </EmpoloyeeDrawer.Navigator>
+      <EmployeeDrawer.Navigator initialRouteName='My Schedule'>
+        <EmployeeDrawer.Screen name='My Schedule' component={ScheduleRoutes} />
+        <EmployeeDrawer.Screen name='Enter Timesheet' component={EnterTimeRoutes} />
+        <EmployeeDrawer.Screen name= 'Profile' component={ProfileRoutes}/>
+      </EmployeeDrawer.Navigator>
     </EmployeeContext.Provider>
   );
 }

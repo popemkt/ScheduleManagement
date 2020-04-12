@@ -2,26 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { dateToWeekday, hourSlotToString } from '../../../../Common/utils';
 
-import EmployeeContext from '../../../../Contexts/EmployeeContext';
+const HourSlotPicker = React.memo(({ entry }) => {
+  const [currentEntry, setCurrentEntry] = useState(entry);
+  const [selected, setSelected] = useState(Boolean(currentEntry.Id));
 
-const HourSlotPicker = React.memo(({ entry, entry: { IsSubmitted } }) => {
-  const [selected, setSelected] = useState(Boolean(entry.Id));
   useEffect(() => {
-    console.log('First time of: ' + JSON.stringify(entry));
+    console.log('First time of: ' + JSON.stringify(entry.Id));
   }, [selected]);
-  console.log(JSON.stringify(entry));
+
+  useEffect(() => {
+    console.log('Every rerender: ' + JSON.stringify(entry.Id));
+  });
+
   return (
     <View style={s.row}>
       <Text>{hourSlotToString(entry.HourSlot)}</Text>
       <TouchableOpacity
         style={{ ...s.chooser, backgroundColor: selected ? 'red' : 'white' }}
         onPress={() => {
-          setSelected(!selected);
-          if (!selected) {
-            entry.IsSubmitted = true;
+          if (entry.Id) {
+            entry.Active = !selected;
           } else {
-            entry.IsSubmitted = false;
+            entry.IsSubmitted = !selected;
           }
+          setCurrentEntry(currentEntry);
+          console.log(JSON.stringify(entry));
+          setSelected(!selected);
         }}
       />
     </View>

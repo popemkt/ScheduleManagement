@@ -81,7 +81,7 @@ export class ScheduleHelper {
   }
 
   initEmpScheduleRegistration = () => {
-    return this.datesOfWeek.flatMap((dateOfWeek) => {
+    let initSchedule = this.datesOfWeek.flatMap((dateOfWeek) => {
       let result = [];
       for (let i = 0; i < 8; i++) {
         result.push({
@@ -93,16 +93,22 @@ export class ScheduleHelper {
       }
       return result;
     });
+    this.schedule = initSchedule;
+    return initSchedule;
   };
 
-  preprocessFetchResult = (result) =>
+  preprocessFetchResult = (result) => {
     result.forEach((entry) => {
       let location = this.getArrayLocationFromDateAndHourSlot(entry);
-      let selectedEntry = this.schedule.entry[location];
+      console.log('location: ' + location);
+      let selectedEntry = this.schedule[location];
       selectedEntry.Id = entry.Id;
       selectedEntry.IsSubmitted = true;
       selectedEntry.Active = entry.Active;
+      console.log('selected entry' + JSON.stringify(selectedEntry));
     });
+    console.log(JSON.stringify(this.schedule));
+  };
 
   getArrayLocationFromDateAndHourSlot = (entry) => {
     let date = new Date(entry.Date);

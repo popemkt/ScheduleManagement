@@ -1,13 +1,31 @@
 import { Button, Overlay } from 'react-native-elements';
-import { Picker, StyleSheet, Text, View } from 'react-native';
+import React, { useContext } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-import DateTimePicker from '../../../../../Components/DatetimePicker';
-import React from 'react';
+import { EmpScheduleRegistrationContext } from '../../../../../Contexts';
 
-function OptionModal({ isVisible, setIsVisile, schedule, setSchedule, currentDate }) {
+function OptionModal({ isVisible, setIsVisile }) {
+  const { schedule, setSchedule, selectedDate } = useContext(
+    EmpScheduleRegistrationContext,
+  );
+
   const onDoThisForWholeWeek = () => {
-    
-  }
+    let selectedDateEntries = schedule.filter(entry => entry.Date === selectedDate);
+    console.log('selected entries' + JSON.stringify(selectedDate));
+    setSchedule(
+      schedule.map((entry, index) => {
+        let selectedDateEntry = selectedDateEntries[index % 8];
+        let realSelectedDateStatus = selectedDateEntry.Id
+          ? selectedDateEntry.Active
+          : selectedDateEntry.IsSubmitted;
+        entry.Id
+          ? (entry.Active = realSelectedDateStatus)
+          : (entry.IsSubmitted = realSelectedDateStatus);
+        return entry;
+      }),
+    );
+    setIsVisile(false);
+  };
 
   return (
     <Overlay
@@ -22,7 +40,7 @@ function OptionModal({ isVisible, setIsVisile, schedule, setSchedule, currentDat
         <Button
           title='Do this for whole week'
           buttonStyle={{ width: '100%' }}
-          onPress={() => {}}
+          onPress={() => onDoThisForWholeWeek()}
         />
       </View>
     </Overlay>

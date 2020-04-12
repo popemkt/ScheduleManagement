@@ -24,31 +24,12 @@ export default function EnterTimesheet({ navigation }) {
   const [schedule, setSchedule] = useState([]);
   const [optionModalVisibility, setOptionModalVisibility] = useState(false);
   const focused = useIsFocused();
-  const [rerender, setRerender] = useState(true);
-  const [counter, setCounter] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(currentWeekDates[0]);
 
-  console.log('re-run EnterTimesheet');
-
-  useEffect(() => {
-    let initSchedule = scheduleHelper.initEmpScheduleRegistration();
-    getEmpScheduleRegistration(employee.Id).then(res => {
-      scheduleHelper.preprocessFetchResult(res);
-      setSchedule(initSchedule);
-      setCounter(counter + 1);
-    })
-    console.log(
-      'index: ' +
-        scheduleHelper.getArrayLocationFromDateAndHourSlot({
-          HourSlot: 16,
-          Date: '2020-04-12',
-        }),
-    );
-  }, []);
+  console.log("Selected date" + selectedDate);
 
   useEffect(() => {
-    if (!focused) setSchedule([]);
-    console.log(counter);
-    if (focused && counter > 1) {
+    if (focused) {
       getEmpScheduleRegistration(employee.Id)
         .then((res) => {
           let initSchedule = scheduleHelper.initEmpScheduleRegistration();
@@ -60,65 +41,72 @@ export default function EnterTimesheet({ navigation }) {
           console.log(err);
         });
     }
-    setCounter(counter + 1);
   }, [focused]);
 
   return (
-    <View style={s.container}>
-      <OptionModal
-        isVisible={optionModalVisibility}
-        setIsVisile={setOptionModalVisibility}
-      />
-      <View style={s.row}>
-        <Text style={s.minorHeader}>{'TimeSheet'}</Text>
-        <Button
-          icon={{ name: 'recycle', size: 10 }}
-          buttonStyle={{ marginLeft: 10, marginBottom: 10 }}
-          // onPress={() => {
-          //   setSchedule([]);
-          // }}
+    <EmpScheduleRegistrationContext.Provider
+      value={{
+        schedule,
+        setSchedule,
+        currentWeekDates,
+        scheduleHelper,
+        selectedDate
+      }}
+    >
+      <View style={s.container}>
+        <OptionModal
+          isVisible={optionModalVisibility}
+          setIsVisile={setOptionModalVisibility}
         />
-      </View>
-      <View style={s.row}>
-        <Button
-          title='Options '
-          icon={{ name: 'cog', size: 10 }}
-          buttonStyle={{ marginLeft: 10 }}
-          onPress={() => setOptionModalVisibility(true)}
-          style={{ color: 'red' }}
-        />
-        <Text>{currentWeekDates[0] + ' to ' + currentWeekDates[6]}</Text>
-        <Button
-          title='Create '
-          icon={{ name: 'plus', size: 10 }}
-          onPress={() => console.log(JSON.stringify(schedule.filter(entry => entry.IsSubmitted)))}
-        />
-      </View>
-      <View style={s.wrapper}>
-        <EmpScheduleRegistrationContext.Provider
-          value={{
-            schedule: schedule,
-            setSchedule: setSchedule,
-            currentWeekDates: currentWeekDates,
-          }}
-        >
+        <View style={s.row}>
+          <Text style={s.minorHeader}>{'TimeSheet'}</Text>
+          <Button
+            icon={{ name: 'recycle', size: 10 }}
+            buttonStyle={{ marginLeft: 10, marginBottom: 10 }}
+            onPress={() => {
+              setSchedule([]);
+            }}
+          />
+        </View>
+        <View style={s.row}>
+          <Button
+            title='Options '
+            icon={{ name: 'cog', size: 10 }}
+            buttonStyle={{ marginLeft: 10 }}
+            onPress={() => setOptionModalVisibility(true)}
+            style={{ color: 'red' }}
+          />
+          <Text>{currentWeekDates[0] + ' to ' + currentWeekDates[6]}</Text>
+          <Button
+            title='Create '
+            icon={{ name: 'plus', size: 10 }}
+            onPress={() =>
+              console.log(
+                JSON.stringify(schedule.filter((entry) => entry.IsSubmitted)),
+              )
+            }
+          />
+        </View>
+        <View style={s.wrapper}>
           <Swiper
             showsButtons={true}
             showsPagination={false}
             loop={false}
             containerStyle={{ borderRadius: 10 }}
+            onIndexChanged={(index) => setSelectedDate(currentWeekDates[index])}
           >
             {currentWeekDates.map((date, index) => (
               <DailySchedule
                 key={index}
                 date={date}
                 entries={schedule.slice(index * 8, (index + 1) * 8)}
+                id={index}
               />
             ))}
           </Swiper>
-        </EmpScheduleRegistrationContext.Provider>
+        </View>
       </View>
-    </View>
+    </EmpScheduleRegistrationContext.Provider>
   );
 }
 

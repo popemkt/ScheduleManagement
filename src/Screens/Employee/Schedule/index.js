@@ -22,7 +22,6 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default function Tasks({ navigation }) {
   const employee = useContext(EmployeeContext);
-  console.log(JSON.stringify(getAuthHeadersConfig()));
   const [listTasks, setListTasks] = useState([]);
   const [searchAgain, setSearchAgain] = useState(true);
   const [userSearch, setUserSearch] = useState('');

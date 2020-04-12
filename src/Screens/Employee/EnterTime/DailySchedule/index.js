@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { dateToWeekday, hourSlotToString } from '../../../../Common/utils';
 
-const HourSlotPicker = React.memo(({ entry }) => {
-  const [currentEntry, setCurrentEntry] = useState(entry);
-  const [selected, setSelected] = useState(Boolean(currentEntry.Id));
+import { EmpScheduleRegistrationContext } from '../../../../Contexts';
 
-  useEffect(() => {
-    console.log('First time of: ' + JSON.stringify(entry.Id));
-  }, [selected]);
+const checkEqual = (prev, next) => prev.selected === next.selected;
 
-  useEffect(() => {
-    console.log('Every rerender: ' + JSON.stringify(entry.Id));
-  });
+const HourSlotPicker = React.memo(({ entry, selected, id }) => {
+  const { schedule, setSchedule, scheduleHelper } = useContext(
+    EmpScheduleRegistrationContext,
+  );
+  
+  console.log('Every rerender: ' + JSON.stringify(entry.Id));
 
   return (
     <View style={s.row}>
@@ -20,21 +19,25 @@ const HourSlotPicker = React.memo(({ entry }) => {
       <TouchableOpacity
         style={{ ...s.chooser, backgroundColor: selected ? 'red' : 'white' }}
         onPress={() => {
-          if (entry.Id) {
-            entry.Active = !selected;
-          } else {
-            entry.IsSubmitted = !selected;
-          }
-          setCurrentEntry(currentEntry);
-          console.log(JSON.stringify(entry));
-          setSelected(!selected);
+          setSchedule(
+            schedule.map((entry, index) => {
+              if (id === index) {
+                if (entry.Id) {
+                  entry.Active = !selected;
+                } else {
+                  entry.IsSubmitted = !selected;
+                }
+              }
+              return entry;
+            }),
+          );
         }}
       />
     </View>
   );
-});
+}, checkEqual);
 
-const DailySchedule = React.memo(({ date, entries }) => {
+const DailySchedule = React.memo(({ date, entries, id }) => {
   return (
     <View style={s.slide}>
       <Text style={s.dayTitle}>{date && dateToWeekday(date)}</Text>
@@ -43,7 +46,11 @@ const DailySchedule = React.memo(({ date, entries }) => {
           {index === 0 || index === 4 ? (
             <Text>{index === 0 ? 'Morning Shift' : 'Afternoon Shift'}</Text>
           ) : null}
-          <HourSlotPicker entry={entry} />
+          <HourSlotPicker
+            entry={entry}
+            selected={entry.Id ? entry.Active : entry.IsSubmitted}
+            id={id * 8 + index}
+          />
         </React.Fragment>
       ))}
     </View>

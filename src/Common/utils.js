@@ -100,12 +100,10 @@ export class ScheduleHelper {
   preprocessFetchResult = (result) => {
     result.forEach((entry) => {
       let location = this.getArrayLocationFromDateAndHourSlot(entry);
-      console.log('location: ' + location);
       let selectedEntry = this.schedule[location];
       selectedEntry.Id = entry.Id;
       selectedEntry.IsSubmitted = true;
       selectedEntry.Active = entry.Active;
-      console.log('selected entry' + JSON.stringify(selectedEntry));
     });
     console.log(JSON.stringify(this.schedule));
   };

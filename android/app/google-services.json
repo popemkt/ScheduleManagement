@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "753498206014",
+    "firebase_url": "https://schedulemanagement-980b4.firebaseio.com",
+    "project_id": "schedulemanagement-980b4",
+    "storage_bucket": "schedulemanagement-980b4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753498206014:android:d09dc1a3c4ea9cf10bc66f",
+        "android_client_info": {
+          "package_name": "com.cs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "753498206014-6v3nve5oo5q4rjunadcihcd3vn495922.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cs",
+            "certificate_hash": "ac0071618ab9ffe843caf96ccb009937b9fe90e4"
+          }
+        },
+        {
+          "client_id": "753498206014-9tg1h7ogubpmus38047i58kdufasitjc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvwCrwMFKEXkaQSJdn2uMz6e4Mb9-nmxM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "753498206014-9tg1h7ogubpmus38047i58kdufasitjc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

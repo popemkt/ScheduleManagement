@@ -13,7 +13,7 @@ import Swiper from 'react-native-swiper';
 import { getEmpScheduleRegistration } from '../../../Services/empScheduleRegistrationService';
 import { useIsFocused } from '@react-navigation/native';
 
-export default function EnterTimesheet() {
+export default function EnterTimesheet({ navigation }) {
   const [currentWeekDates, setCurrentWeekDates] = useState(
     getCurrentWeekDates(),
   );
@@ -24,9 +24,18 @@ export default function EnterTimesheet() {
   const [schedule, setSchedule] = useState([]);
   const [optionModalVisibility, setOptionModalVisibility] = useState(false);
   const focused = useIsFocused();
+  const [rerender, setRerender] = useState(true);
+  const [counter, setCounter] = useState(0);
+
+  console.log('re-run EnterTimesheet');
 
   useEffect(() => {
-    setSchedule(scheduleHelper.initEmpScheduleRegistration());
+    let initSchedule = scheduleHelper.initEmpScheduleRegistration();
+    getEmpScheduleRegistration(employee.Id).then(res => {
+      scheduleHelper.preprocessFetchResult(res);
+      setSchedule(initSchedule);
+      setCounter(counter + 1);
+    })
     console.log(
       'index: ' +
         scheduleHelper.getArrayLocationFromDateAndHourSlot({
@@ -36,18 +45,23 @@ export default function EnterTimesheet() {
     );
   }, []);
 
-  console.log('rerender');
-
   useEffect(() => {
-    if (focused)
+    if (!focused) setSchedule([]);
+    console.log(counter);
+    if (focused && counter > 1) {
       getEmpScheduleRegistration(employee.Id)
         .then((res) => {
+          let initSchedule = scheduleHelper.initEmpScheduleRegistration();
           scheduleHelper.preprocessFetchResult(res);
+          setSchedule(initSchedule);
+          console.log('reset schedule');
         })
         .catch((err) => {
           console.log(err);
         });
-  }, [focused, schedule]);
+    }
+    setCounter(counter + 1);
+  }, [focused]);
 
   return (
     <View style={s.container}>
@@ -60,9 +74,9 @@ export default function EnterTimesheet() {
         <Button
           icon={{ name: 'recycle', size: 10 }}
           buttonStyle={{ marginLeft: 10, marginBottom: 10 }}
-          onPress={() => {
-            setSchedule([]);
-          }}
+          // onPress={() => {
+          //   setSchedule([]);
+          // }}
         />
       </View>
       <View style={s.row}>
@@ -77,7 +91,7 @@ export default function EnterTimesheet() {
         <Button
           title='Create '
           icon={{ name: 'plus', size: 10 }}
-          // onPress={() => navigation.navigate('CreateTask')}
+          onPress={() => console.log(JSON.stringify(schedule.filter(entry => entry.IsSubmitted)))}
         />
       </View>
       <View style={s.wrapper}>

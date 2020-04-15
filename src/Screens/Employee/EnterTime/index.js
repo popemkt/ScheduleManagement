@@ -1,10 +1,10 @@
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import {
   EmpScheduleRegistrationContext,
   EmployeeContext,
 } from '../../../Contexts';
 import React, { useContext, useEffect, useState } from 'react';
 import { ScheduleHelper, getCurrentWeekDates } from '../../../Common/utils';
-import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../../Components/Button';
 import DailySchedule from './DailySchedule';
@@ -26,19 +26,21 @@ export default function EnterTimesheet({ navigation }) {
   const focused = useIsFocused();
   const [selectedDate, setSelectedDate] = useState(currentWeekDates[0]);
 
-  console.log("Selected date" + selectedDate);
+  console.log('Selected date' + selectedDate);
 
   useEffect(() => {
     if (focused) {
-      getEmpScheduleRegistration(employee.Id)
+      getEmpScheduleRegistration(1, currentWeekDates[0], currentWeekDates[currentWeekDates.length-1])
         .then((res) => {
+          let resultEntries = res.data.Data.Details;
+          console.log(JSON.stringify(resultEntries));
           let initSchedule = scheduleHelper.initEmpScheduleRegistration();
-          scheduleHelper.preprocessFetchResult(res);
+          scheduleHelper.preprocessFetchResult(resultEntries);
           setSchedule(initSchedule);
           console.log('reset schedule');
         })
         .catch((err) => {
-          console.log(err);
+          Alert.alert('Error', 'Error fetching server data!')
         });
     }
   }, [focused]);
@@ -50,7 +52,7 @@ export default function EnterTimesheet({ navigation }) {
         setSchedule,
         currentWeekDates,
         scheduleHelper,
-        selectedDate
+        selectedDate,
       }}
     >
       <View style={s.container}>

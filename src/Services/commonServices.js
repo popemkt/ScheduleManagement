@@ -1,8 +1,8 @@
-import { BASE_URL } from "../Constants/appConfigs";
-import axios from "axios";
+import { BASE_URL } from '../Constants/appConfigs';
+import axios from 'axios';
 
 async function login(username, password) {
-  let response = axios.post(`${BASE_URL}Home/Login`, {
+  let response = axios.post(`${BASE_URL}auth/login`, {
     Username: username,
     Password: password,
   });
@@ -10,9 +10,10 @@ async function login(username, password) {
 }
 
 function firebaseLogin(firebaseToken, response, error, final) {
+  console.log(firebaseToken);
   axios
-    .post(`${BASE_URL}Home/Login`, {
-      token: firebaseToken,
+    .post(`${BASE_URL}auth/firebase`, {
+      Token: firebaseToken,
     })
     .then(response)
     .catch(error)

@@ -1,0 +1,91 @@
+import React, { useRef } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { Button } from 'react-native-elements';
+import Swiper from 'react-native-swiper';
+import { theme } from '../../Constants/style';
+
+function HourSlot({ title, onPress }) {
+  return (
+    <View style={s.hourSlot}>
+      <Button
+        title={title}
+        onPress={() => onPress && onPress()}
+        style={s.touchOpacity}
+        containerStyle={s.hourSlotButton}
+        buttonStyle={s.hourSlotButton}
+        titleStyle={s.hourSlotTitle}
+      />
+    </View>
+  );
+}
+
+export default function ScheduleContent({ navigation }) {
+  const swiperRef = useRef(null);
+
+  return (
+    <View style={s.scheduleContent}>
+      <Swiper ref={swiperRef}>
+        <View style={s.swiper}>
+          <HourSlot title='8h' onPress={() => swiperRef.current.scrollBy(1)} />
+          <HourSlot title='9h' />
+          <HourSlot title='10h' />
+          <HourSlot title='11h' />
+          <View style={s.separator} />
+          <HourSlot title='13h' />
+          <HourSlot title='14h' />
+          <HourSlot title='15h' />
+          <HourSlot title='16h' />
+        </View>
+        <View style={s.swiper}>
+          <HourSlot title='8h' onPress={() => swiperRef.current.scrollBy(-1)} />
+          <HourSlot title='9h' />
+          <HourSlot title='10h' />
+          <HourSlot title='11h' />
+          <View style={s.separator} />
+          <HourSlot title='13h' />
+          <HourSlot title='14h' />
+          <HourSlot title='15h' />
+          <HourSlot title='16h' />
+        </View>
+      </Swiper>
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  scheduleContent: {
+    flex: 1,
+    borderTopColor: theme.colors.borderGreyBold,
+    borderTopWidth: 2,
+    borderLeftColor: theme.colors.borderGreyBold,
+    borderLeftWidth: 2,
+  },
+  hourSlot: {
+    flex: 2,
+    height: 100,
+    backgroundColor: 'white',
+    borderBottomColor: theme.colors.borderGrey,
+    borderBottomWidth: 1,
+  },
+  separator: {
+    flex: 1,
+    backgroundColor: 'white',
+    borderBottomColor: theme.colors.borderGrey,
+    borderBottomWidth: 1,
+  },
+  hourSlotButton: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+  hourSlotTitle: {
+    fontSize: 20,
+    color: theme.colors.grey,
+  },
+  swiper: {
+    flex: 1,
+  },
+});

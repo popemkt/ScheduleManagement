@@ -1,9 +1,9 @@
 const ROLE_NAME = {
-    Admin: 1,
-    Employee: 2,
-    Manager: 3
+  Admin: 1,
+  Manager: 2,
+  Employee: 3,
 };
 
 export default {
-    ROLE_NAME
-}
+  ROLE_NAME,
+};

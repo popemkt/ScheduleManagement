@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   View,
+  TextInput,
 } from 'react-native';
 import {
   GoogleSignin,
@@ -23,7 +24,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import auth from '@react-native-firebase/auth';
 import roleConstant from './constant';
 import screenConstant from '../constant';
-
+import messaging from "@react-native-firebase/messaging";
 const BG_IMAGE = require('../../Assets/background.jpg');
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -145,6 +146,7 @@ export default function Login({ navigation }) {
       token,
       (response) => {
         const data = response.data.Data;
+        subscribeFCMTopic('test');
         setAuthToken(data.Token);
         switch (data.RoleId) {
           case roleConstant.ROLE_NAME.Employee:
@@ -163,8 +165,12 @@ export default function Login({ navigation }) {
       },
       (err) => {
         console.log("Something's wrong");
+        console.log(JSON.stringify(err));
       },
     );
+  }
+  function subscribeFCMTopic(topic){
+    messaging().subscribeToTopic(topic);
   }
   return (
     <KeyboardAvoidingView

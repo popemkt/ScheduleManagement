@@ -1,9 +1,12 @@
-import React, { useRef } from 'react';
+import React, { memo, useContext, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from 'react-native-elements';
+import { EmpScheduleViewContext } from '../../Contexts';
 import Swiper from 'react-native-swiper';
 import { theme } from '../../Constants/style';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 function HourSlot({ title, onPress }) {
   return (
@@ -20,14 +23,35 @@ function HourSlot({ title, onPress }) {
   );
 }
 
-export default function ScheduleContent({ navigation }) {
-  const swiperRef = useRef(null);
+const ScheduleContent = memo(({ selectedDate }) => {
+  const { calendarSwiperRef, currentWeekDates, setSelectedDate } = useContext(
+    EmpScheduleViewContext,
+  );
+  const [index, setIndex] = useState(0);
+
+  console.log('SELECTED DATE ' + selectedDate);
+
+  useEffect(() => {
+    let currentIndex = currentWeekDates.indexOf(selectedDate);
+    if (currentIndex !== index) {
+      calendarSwiperRef.current.scrollBy(currentIndex - index);
+    }
+  }, [selectedDate]);
 
   return (
     <View style={s.scheduleContent}>
-      <Swiper ref={swiperRef}>
+      <Swiper
+        scrollEnabled={false}
+        onMomentumScrollEnd={(e, state, context) => {
+          setIndex(state.index);
+          setSelectedDate(currentWeekDates[state.index]);
+        }}
+        loop={false}
+        showsPagination={false}
+        ref={calendarSwiperRef}
+      >
         <View style={s.swiper}>
-          <HourSlot title='8h' onPress={() => swiperRef.current.scrollBy(1)} />
+          <HourSlot title='8h' />
           <HourSlot title='9h' />
           <HourSlot title='10h' />
           <HourSlot title='11h' />
@@ -38,7 +62,77 @@ export default function ScheduleContent({ navigation }) {
           <HourSlot title='16h' />
         </View>
         <View style={s.swiper}>
-          <HourSlot title='8h' onPress={() => swiperRef.current.scrollBy(-1)} />
+          <HourSlot title='8h' />
+          <HourSlot title='9h' />
+          <HourSlot title='10h' />
+          <HourSlot title='11h' />
+          <View style={s.separator} />
+          <HourSlot title='13h' />
+          <HourSlot title='14h' />
+          <HourSlot title='15h' />
+          <HourSlot title='16h' />
+        </View>
+        <View style={s.swiper}>
+          <HourSlot
+            title='8h'
+            onPress={() => calendarSwiperRef.current.scrollBy(-1)}
+          />
+          <HourSlot title='9h' />
+          <HourSlot title='10h' />
+          <HourSlot title='11h' />
+          <View style={s.separator} />
+          <HourSlot title='13h' />
+          <HourSlot title='14h' />
+          <HourSlot title='15h' />
+          <HourSlot title='16h' />
+        </View>
+        <View style={s.swiper}>
+          <HourSlot
+            title='8h'
+            onPress={() => calendarSwiperRef.current.scrollBy(-1)}
+          />
+          <HourSlot title='9h' />
+          <HourSlot title='10h' />
+          <HourSlot title='11h' />
+          <View style={s.separator} />
+          <HourSlot title='13h' />
+          <HourSlot title='14h' />
+          <HourSlot title='15h' />
+          <HourSlot title='16h' />
+        </View>
+        <View style={s.swiper}>
+          <HourSlot
+            title='8h'
+            onPress={() => calendarSwiperRef.current.scrollBy(-1)}
+          />
+          <HourSlot title='9h' />
+          <HourSlot title='10h' />
+          <HourSlot title='11h' />
+          <View style={s.separator} />
+          <HourSlot title='13h' />
+          <HourSlot title='14h' />
+          <HourSlot title='15h' />
+          <HourSlot title='16h' />
+        </View>
+        <View style={s.swiper}>
+          <HourSlot
+            title='8h'
+            onPress={() => calendarSwiperRef.current.scrollBy(-1)}
+          />
+          <HourSlot title='9h' />
+          <HourSlot title='10h' />
+          <HourSlot title='11h' />
+          <View style={s.separator} />
+          <HourSlot title='13h' />
+          <HourSlot title='14h' />
+          <HourSlot title='15h' />
+          <HourSlot title='16h' />
+        </View>
+        <View style={s.swiper}>
+          <HourSlot
+            title='8h'
+            onPress={() => calendarSwiperRef.current.scrollBy(-1)}
+          />
           <HourSlot title='9h' />
           <HourSlot title='10h' />
           <HourSlot title='11h' />
@@ -51,7 +145,7 @@ export default function ScheduleContent({ navigation }) {
       </Swiper>
     </View>
   );
-}
+});
 
 const s = StyleSheet.create({
   scheduleContent: {
@@ -89,3 +183,5 @@ const s = StyleSheet.create({
     flex: 1,
   },
 });
+
+export default ScheduleContent;

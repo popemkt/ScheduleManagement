@@ -10,17 +10,14 @@ function OptionModal({ isVisible, setIsVisile }) {
   );
 
   const onDoThisForWholeWeek = () => {
-    let selectedDateEntries = schedule.filter(entry => entry.Date === selectedDate);
+    let selectedDateEntries = schedule.filter(
+      (entry) => entry.Date === selectedDate,
+    );
     console.log('selected entries' + JSON.stringify(selectedDate));
     setSchedule(
       schedule.map((entry, index) => {
         let selectedDateEntry = selectedDateEntries[index % 8];
-        let realSelectedDateStatus = selectedDateEntry.Id
-          ? selectedDateEntry.Active
-          : selectedDateEntry.IsSubmitted;
-        entry.Id
-          ? (entry.Active = realSelectedDateStatus)
-          : (entry.IsSubmitted = realSelectedDateStatus);
+        entry.IsSubmitted = selectedDateEntry.IsSubmitted;
         return entry;
       }),
     );

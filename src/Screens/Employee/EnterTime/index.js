@@ -5,42 +5,80 @@ import {
 } from '../../../Contexts';
 import React, { useContext, useEffect, useState } from 'react';
 import { ScheduleHelper, getCurrentWeekDates } from '../../../Common/utils';
+import {
+  getEmpScheduleRegistration,
+  updateEmpScheduleRegistration,
+} from '../../../Services/empScheduleRegistrationService';
 
 import Button from '../../../Components/Button';
 import DailySchedule from './DailySchedule';
+import LoadingModal from '../../../Components/LoadingModal';
 import OptionModal from './Modals/OptionModal/OptionModal';
 import Swiper from 'react-native-swiper';
-import { getEmpScheduleRegistration } from '../../../Services/empScheduleRegistrationService';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function EnterTimesheet({ navigation }) {
   const [currentWeekDates, setCurrentWeekDates] = useState(
     getCurrentWeekDates(),
   );
+  const emp = useContext(EmployeeContext);
   const [scheduleHelper, setScheduleHelper] = useState(
     new ScheduleHelper(currentWeekDates),
   );
-  const employee = useContext(EmployeeContext);
   const [schedule, setSchedule] = useState([]);
   const [optionModalVisibility, setOptionModalVisibility] = useState(false);
   const focused = useIsFocused();
   const [selectedDate, setSelectedDate] = useState(currentWeekDates[0]);
+  const [isUpdate, setIsUpdate] = useState();
+  const [loadingModal, setLoadingModal] = useState({
+    isLoading: false,
+    message: 'Loading',
+  });
 
   console.log('Selected date' + selectedDate);
 
+  const _onCreateOrEdit = () => {
+    setLoadingModal({ isLoading: true, message: 'Submitting schedule...' });
+    let oldData = scheduleHelper.data;
+    let newScheduleEntries = schedule.filter(
+      (entry) => entry.IsSubmitted === true,
+    );
+    console.log();
+    updateEmpScheduleRegistration(oldData, newScheduleEntries)
+      .then((res) => {
+        setLoadingModal({ ...loadingModal, isLoading: false });
+        console.log(JSON.stringify(res));
+        Alert.alert('INFO', 'Update successful');
+      })
+      .catch((err) => {
+        setLoadingModal({ ...loadingModal, isLoading: false });
+
+        Alert.alert('ERROR', 'Error submitting data!');
+      });
+  };
+
   useEffect(() => {
     if (focused) {
-      getEmpScheduleRegistration(1, currentWeekDates[0], currentWeekDates[currentWeekDates.length-1])
+      setLoadingModal({ isLoading: true, message: 'Fetching data...' });
+      getEmpScheduleRegistration(
+        1,
+        currentWeekDates[0],
+        currentWeekDates[currentWeekDates.length - 1],
+      )
         .then((res) => {
           let resultEntries = res.data.Data.Details;
           console.log(JSON.stringify(resultEntries));
-          let initSchedule = scheduleHelper.initEmpScheduleRegistration();
+          let initSchedule = scheduleHelper.initEmpScheduleRegistration(
+            res.data.Data,
+          );
           scheduleHelper.preprocessFetchResult(resultEntries);
           setSchedule(initSchedule);
+          setLoadingModal({ ...loadingModal, isLoading: false });
           console.log('reset schedule');
         })
         .catch((err) => {
-          Alert.alert('Error', 'Error fetching server data!')
+          setLoadingModal({ ...loadingModal, isLoading: false });
+          Alert.alert('Error', 'Error fetching server data!');
         });
     }
   }, [focused]);
@@ -60,15 +98,16 @@ export default function EnterTimesheet({ navigation }) {
           isVisible={optionModalVisibility}
           setIsVisile={setOptionModalVisibility}
         />
+        <LoadingModal
+          message={loadingModal.message}
+          isVisible={loadingModal.isLoading}
+        />
         <View style={s.row}>
           <Text style={s.minorHeader}>{'TimeSheet'}</Text>
-          <Button
+          {/* <Button
             icon={{ name: 'recycle', size: 10 }}
             buttonStyle={{ marginLeft: 10, marginBottom: 10 }}
-            onPress={() => {
-              setSchedule([]);
-            }}
-          />
+          /> */}
         </View>
         <View style={s.row}>
           <Button
@@ -82,11 +121,7 @@ export default function EnterTimesheet({ navigation }) {
           <Button
             title='Create '
             icon={{ name: 'plus', size: 10 }}
-            onPress={() =>
-              console.log(
-                JSON.stringify(schedule.filter((entry) => entry.IsSubmitted)),
-              )
-            }
+            onPress={_onCreateOrEdit}
           />
         </View>
         <View style={s.wrapper}>
@@ -94,7 +129,7 @@ export default function EnterTimesheet({ navigation }) {
             showsButtons={true}
             showsPagination={false}
             loop={false}
-            containerStyle={{ borderRadius: 10 }}
+            containerStyle={s.swiper}
             onIndexChanged={(index) => setSelectedDate(currentWeekDates[index])}
           >
             {currentWeekDates.map((date, index) => (
@@ -154,5 +189,8 @@ const s = StyleSheet.create({
     color: '#fff',
     fontSize: 30,
     fontWeight: 'bold',
+  },
+  swiper: {
+    borderRadius: 10,
   },
 });

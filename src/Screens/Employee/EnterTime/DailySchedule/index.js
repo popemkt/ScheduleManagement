@@ -10,7 +10,7 @@ const HourSlotPicker = React.memo(({ entry, selected, id }) => {
   const { schedule, setSchedule, scheduleHelper } = useContext(
     EmpScheduleRegistrationContext,
   );
-  
+
   console.log('Every rerender: ' + JSON.stringify(entry.Id));
 
   return (
@@ -22,11 +22,7 @@ const HourSlotPicker = React.memo(({ entry, selected, id }) => {
           setSchedule(
             schedule.map((entry, index) => {
               if (id === index) {
-                if (entry.Id) {
-                  entry.Active = !selected;
-                } else {
-                  entry.IsSubmitted = !selected;
-                }
+                entry.IsSubmitted = !selected;
               }
               return entry;
             }),
@@ -48,7 +44,7 @@ const DailySchedule = React.memo(({ date, entries, id }) => {
           ) : null}
           <HourSlotPicker
             entry={entry}
-            selected={entry.Id ? entry.Active : entry.IsSubmitted}
+            selected={entry.IsSubmitted}
             id={id * 8 + index}
           />
         </React.Fragment>

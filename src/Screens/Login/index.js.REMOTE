@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import {
@@ -14,15 +13,14 @@ import {
   GoogleSigninButton,
   statusCodes,
 } from 'react-native-google-signin';
-import React, { useContext, useEffect, useState } from 'react';
-import { empInfo, getAuthHeadersConfig, setAuthToken } from '../../Common/config';
+import React, { useState } from 'react';
 import { firebaseLogin, login } from '../../Services/commonServices';
+import { getAuthHeadersConfig, setAuthToken } from '../../Common/config';
 
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import LoadingModal from '../../Components/LoadingModal';
 import auth from '@react-native-firebase/auth';
-import messaging from "@react-native-firebase/messaging";
 import roleConstant from './constant';
 import screenConstant from '../constant';
 
@@ -104,9 +102,7 @@ export default function Login({ navigation }) {
       (response) => {
         setIsLoading(false);
         const data = response.data.Data;
-        subscribeFCMTopic('test');
         setAuthToken(data.Token);
-        empInfo.id = data.EmpId;
         switch (data.RoleId) {
           case roleConstant.ROLE_NAME.Employee:
             navigation.navigate(screenConstant.SCREENS.employee, data);
@@ -127,9 +123,6 @@ export default function Login({ navigation }) {
         console.log("Something's wrong" + JSON.stringify(err));
       },
     );
-  }
-  function subscribeFCMTopic(topic){
-    messaging().subscribeToTopic(topic);
   }
   return (
     <KeyboardAvoidingView

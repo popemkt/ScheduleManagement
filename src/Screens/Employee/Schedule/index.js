@@ -6,177 +6,98 @@ import {
   Text,
   View,
 } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
-import { ScheduleHelper, getDatetime, truncate } from '../../../Common/utils';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import {
+  ScheduleHelper,
+  addDays,
+  getCurrentWeekDates,
+} from '../../../Common/utils';
 
-import Button from '../../../Components/Button';
-import { EmployeeContext } from '../../../Contexts';
-import { ListItem } from 'react-native-elements';
-import OptionModal from './Modals/OptionModal/OptionModal';
+import { EmpScheduleViewContext } from '../../../Contexts';
+import LoadingModal from '../../../Components/LoadingModal';
 import ScheduleContent from '../../../Components/ScheduleContent';
 import ScheduleSidebar from '../../../Components/ScheduleSidebar';
 import ScheduleTopControl from '../../../Components/ScheduleTopControl';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { getAllTasks } from '../../../Services/taskServices';
+import { getEmpScheduleRegistration } from '../../../Services/empScheduleRegistrationService';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function Schedule({ navigation }) {
+  const calendarStripRef = useRef(null);
+  const calendarSwiperRef = useRef(null);
+  const [currentWeekDates, setCurrentWeekDates] = useState(
+    getCurrentWeekDates(),
+  );
+  const [scheduleHelper, setScheduleHelper] = useState(
+    new ScheduleHelper(currentWeekDates),
+  );
+  const [schedule, setSchedule] = useState([]);
+  const [optionModalVisibility, setOptionModalVisibility] = useState(false);
+  const focused = useIsFocused();
+  const [selectedDate, setSelectedDate] = useState(currentWeekDates[0]);
+  const [loadingModal, setLoadingModal] = useState({
+    isLoading: false,
+    message: 'Fetching server data...',
+  });
+
+  const _fetchData = () => {
+    setLoadingModal({ isLoading: true, message: 'Fetching data...' });
+    getEmpScheduleRegistration(
+      1,
+      currentWeekDates[0],
+      currentWeekDates[currentWeekDates.length - 1],
+    )
+      .then((res) => {
+        let resultEntries = res.data.Data.Details;
+        console.log(JSON.stringify(resultEntries));
+        let initSchedule = scheduleHelper.initEmpScheduleRegistration(
+          res.data.Data,
+        );
+        scheduleHelper.preprocessFetchResult(resultEntries);
+        setSchedule(initSchedule);
+        setLoadingModal({ ...loadingModal, isLoading: false });
+        console.log('reset schedule');
+      })
+      .catch((err) => {
+        setLoadingModal({ ...loadingModal, isLoading: false });
+        Alert.alert('Error', 'Error fetching server data!');
+      });
+  };
+
+  useEffect(() => {
+    if (focused) {
+      _fetchData();
+    }
+  }, [focused]);
+
   return (
     <View style={s.container}>
-      <ScheduleTopControl />
-      <View style={s.schedule}>
-        <ScheduleSidebar />
-        <ScheduleContent />
-      </View>
+      <LoadingModal
+        isVisible={loadingModal.isLoading}
+        message={loadingModal.message}
+      />
+      <EmpScheduleViewContext.Provider
+        value={{
+          calendarSwiperRef,
+          calendarStripRef,
+          currentWeekDates,
+          setCurrentWeekDates,
+          schedule,
+          setSchedule,
+          selectedDate,
+          setSelectedDate,
+          loadingModal,
+          setLoadingModal,
+        }}
+      >
+        <ScheduleTopControl selectedDate={selectedDate} />
+        <View style={s.schedule}>
+          <ScheduleSidebar />
+          <ScheduleContent selectedDate={selectedDate} />
+        </View>
+      </EmpScheduleViewContext.Provider>
     </View>
   );
 }
-
-// export default function Schedule({ navigation }) {
-//   const employee = useContext(EmployeeContext);
-//   const [listTasks, setListTasks] = useState([]);
-//   const [searchAgain, setSearchAgain] = useState(true);
-//   const [userSearch, setUserSearch] = useState('');
-//   const [options, setOptions] = useState({
-//     filter: false,
-//     fromDate: null,
-//     toDate: null,
-//     status: null,
-//   });
-//   const [optionModalVisibility, setOptionModalVisibility] = useState(false);
-//   const focused = useIsFocused();
-//   const icon = {
-//     name: 'wrench',
-//     type: 'font-awesome',
-//     color: '#2089dc',
-//   };
-
-//   const filter = (l) => {
-//     return Boolean(
-//       (!userSearch ||
-//         (userSearch &&
-//           l.ProcesssorName.toLowerCase().includes(userSearch.toLowerCase()))) &&
-//         optionFilter(l),
-//     );
-//   };
-
-//   const optionFilter = (l) => {
-//     if (options.filter) {
-//       let date = new Date(l.DueDate);
-//       return (
-//         Boolean(options.fromDate ? date >= options.fromDate : true) &&
-//         (options.toDate ? date <= options.toDate : true) &&
-//         (options.status ? options.status == l.Status : true)
-//       );
-//     } else return true;
-//   };
-
-//   useEffect(() => {
-//     if (focused)
-//       getAllTasks(employee.Id)
-//         .then((res) => {
-//           setListTasks(res.data.Data);
-//         })
-//         .catch((err) => {
-//           console.log(err);
-//         });
-//   }, [focused, searchAgain]);
-
-//   return (
-//     <View style={s.container}>
-//       <OptionModal
-//         isVisible={optionModalVisibility}
-//         setIsVisile={setOptionModalVisibility}
-//         options={options}
-//         setOptions={setOptions}
-//       />
-//       <Text style={s.header}>{employee.Username || 'Admin Board'}</Text>
-//       <View style={s.row}>
-//         <Text style={s.minorHeader}>{'Tasks'}</Text>
-//         <Button
-//           icon={{ name: 'recycle', size: 10 }}
-//           buttonStyle={{ marginLeft: 10, marginBottom: 10 }}
-//           onPress={() => {
-//             setUserSearch('');
-//             setSearchAgain(!searchAgain);
-//             setOptions({
-//               filter: false,
-//               fromDate: null,
-//               toDate: null,
-//               status: null,
-//             });
-//           }}
-//         />
-//       </View>
-//       <View style={s.row}>
-//         <Button
-//           title='Options '
-//           icon={{ name: 'cog', size: 10 }}
-//           buttonStyle={{ marginLeft: 10 }}
-//           onPress={() => setOptionModalVisibility(true)}
-//           style={{ color: 'red' }}
-//         />
-//         <Button
-//           title='Create '
-//           icon={{ name: 'plus', size: 10 }}
-//           onPress={() => navigation.navigate('CreateTask')}
-//         />
-//       </View>
-//       <View style={{ width: '100%', height: SCREEN_HEIGHT - 190 }}>
-//         <ScrollView
-//           contentContainerStyle={{
-//             paddingVertical: 8,
-//           }}
-//         >
-//           {listTasks
-//             ? listTasks.map((l, i) => {
-//                 if (filter(l)) {
-//                   console.log(JSON.stringify(l));
-//                   return (
-//                     <ListItem
-//                       Component={TouchableOpacity}
-//                       style={s.listItem}
-//                       roundAvatar
-//                       chevron
-//                       subtitle={
-//                         truncate(
-//                           l.ProcesssorName +
-//                             (l.ContentAssigned && l.ContentAssigned !== 'null'
-//                               ? ': ' + l.ContentAssigned
-//                               : ''),
-//                           40,
-//                         ) +
-//                         ('\n' + getDatetime(l.DueDate))
-//                       }
-//                       titleStyle={{ fontWeight: 'bold' }}
-//                       bottomDivider
-//                       leftIcon={icon}
-//                       key={l.TaskId}
-//                       onPress={() => {
-//                         navigation.navigate('TaskDetails', { ...l });
-//                       }}
-//                       rightTitle={l.StatusName}
-//                       rightSubtitle={l.AcceptanceName}
-//                       rightSubtitleStyle={{
-//                         color:
-//                           l.Acceptance !== null
-//                             ? l.Acceptance
-//                               ? 'green'
-//                               : 'red'
-//                             : 'grey',
-//                       }}
-//                       rightTitleStyle={s.rightTitleStyle}
-//                       title={l.TaskName}
-//                     />
-//                   );
-//                 }
-//               })
-//             : null}
-//         </ScrollView>
-//       </View>
-//     </View>
-//   );
-// }
 
 const s = StyleSheet.create({
   container: {

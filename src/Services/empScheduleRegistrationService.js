@@ -7,8 +7,17 @@ export async function getEmpScheduleRegistration(empId, startDate, endDate) {
     `${BASE_URL}empsr?empID=${empId}&start=${startDate}&end=${endDate}`,
     getAuthHeadersConfig(),
   );
-  console.log(`REQUEST URL: ${BASE_URL}empsr?empID=${empId}&start=${startDate}&end=${endDate}`);
-  console.log(`AUTH HEADER: ${getAuthHeadersConfig()}`);
+  return response;
+}
 
+export async function updateEmpScheduleRegistration(oldData, newEntries) {
+  let response = axios.put(
+    `${BASE_URL}empsr`,
+    {
+      ...oldData,
+      Details: newEntries,
+    },
+    getAuthHeadersConfig(),
+  );
   return response;
 }

@@ -48,8 +48,8 @@ export function dateToWeekday(date) {
   return day;
 }
 
-export function getCurrentWeekDates() {
-  let currentDate = new Date();
+export function getCurrentWeekDates(today = new Date()) {
+  let currentDate = today;
   let currentWeekday = currentDate.getDay();
   return [
     addDays(currentDate, 1 - currentWeekday),
@@ -75,12 +75,19 @@ export function toISODateString(date) {
 }
 
 export class ScheduleHelper {
-  constructor(datesOfWeek, schedule) {
+  constructor(datesOfWeek, schedule, data) {
     this.datesOfWeek = datesOfWeek;
     this.schedule = schedule;
+    this.data = data;
   }
 
-  initEmpScheduleRegistration = () => {
+  setCurrentWeekDates = (datesOfWeek) => {
+    this.datesOfWeek = datesOfWeek;
+    this.initEmpScheduleRegistration();
+  }
+
+  initEmpScheduleRegistration = (data = null) => {
+    this.data = data;
     let initSchedule = this.datesOfWeek.flatMap((dateOfWeek) => {
       let result = [];
       for (let i = 0; i < 8; i++) {

@@ -1,10 +1,40 @@
 import { View, StyleSheet, Text, Image } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import Button from "../../../Components/Button";
 import LogoutButton from "../../../Components/LogoutButton";
 import { TouchableOpacity } from "react-native-gesture-handler";
-
+import EmployeeServices from "../../../Services/EmployeeServices";
+import { empInfo } from "../../../Common/config";
+import { useIsFocused } from "@react-navigation/native";
 export default function Profile({ navigation }) {
+  const [employee, setEmployee] = useState({
+    init: true,
+    value: {},
+  });
+  const isFocus = useIsFocused();
+  if(!isFocus) employee.init = true;
+  else if(employee.init){
+    getProfile();
+  }
+  function getProfile() {
+    EmployeeServices.getEmployee(
+      empInfo.id,
+      (resp) => {
+        const data = resp.data.Data;
+        console.log("Employee data: " + JSON.stringify(data));
+        setEmployee({
+          init:false,
+          value: data
+        });
+      },
+      (err) => {
+        console.log("ERROR: " + JSON.stringify(err));
+      },
+      final => {
+
+      }
+    );
+  }
   return (
     <View style={{ flex: 1 }}>
       <View style={s.container}>
@@ -15,13 +45,13 @@ export default function Profile({ navigation }) {
         <View style={s.infoContainer}>
           <View style={s.infoBody}>
             <Text style={s.infoTitle}>Username</Text>
-            <Text style={s.infoValue}>martino</Text>
+            <Text style={s.infoValue}>{employee.value.Username}</Text>
           </View>
         </View>
         <View style={s.infoContainer}>
           <View style={s.infoBody}>
             <Text style={s.infoTitle}>Full Name</Text>
-            <Text style={s.infoValue}>Selena Martin</Text>
+            <Text style={s.infoValue}>{employee.value.Fullname}</Text>
           </View>
         </View>
         <View style={s.infoContainer}>
@@ -49,7 +79,12 @@ export default function Profile({ navigation }) {
           </View>
         </View>
         <View style={s.btnLogOut}>
-        <TouchableOpacity style={s.btnLogOut} onPress= {() => navigation.popToTop()}><Text style={s.txtLogOut}>Log Out</Text></TouchableOpacity>
+          <TouchableOpacity
+            style={s.btnLogOut}
+            onPress={() => navigation.popToTop()}
+          >
+            <Text style={s.txtLogOut}>Log Out</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -67,7 +102,7 @@ const s = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    marginTop: 40
+    marginTop: 40,
   },
   infoContainer: {
     width: "100%",
@@ -86,21 +121,21 @@ const s = StyleSheet.create({
     justifyContent: "space-between",
   },
   infoTitle: {
-    color: '#d5d5d5'
+    color: "#d5d5d5",
   },
   infoValue: {
     fontWeight: "bold",
   },
   btnLogOut: {
     marginTop: 20,
-    backgroundColor: '#70d0d4',
+    backgroundColor: "#70d0d4",
     borderRadius: 10,
     width: 100,
-    alignItems: 'center',
+    alignItems: "center",
   },
-  txtLogOut:{
-    color: '#ffffff',
-    fontWeight: 'bold',
+  txtLogOut: {
+    color: "#ffffff",
+    fontWeight: "bold",
     fontSize: 17,
-  }
+  },
 });

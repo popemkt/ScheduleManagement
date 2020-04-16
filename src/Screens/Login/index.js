@@ -14,14 +14,14 @@ import {
   GoogleSigninButton,
   statusCodes,
 } from 'react-native-google-signin';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { firebaseLogin, login } from '../../Services/commonServices';
-import { getAuthHeadersConfig, setAuthToken } from '../../Common/config';
+import { getAuthHeadersConfig, setAuthToken, empInfo } from '../../Common/config';
 
 import AuthContext from '../../Contexts/AuthContext';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import auth from '@react-native-firebase/auth';
+import auth, { firebase } from '@react-native-firebase/auth';
 import roleConstant from './constant';
 import screenConstant from '../constant';
 import messaging from "@react-native-firebase/messaging";
@@ -148,6 +148,7 @@ export default function Login({ navigation }) {
         const data = response.data.Data;
         subscribeFCMTopic('test');
         setAuthToken(data.Token);
+        empInfo.id = data.EmpId;
         switch (data.RoleId) {
           case roleConstant.ROLE_NAME.Employee:
             navigation.navigate(screenConstant.SCREENS.employee, data);
